@@ -1,1 +1,34 @@
-This is the file
+version: '3'
+
+services:
+#
+#	Management
+#
+  Socat-Portainer:
+    image: alpine/socat
+    container_name: Socat-Portainer
+    restart: always
+    hostname: socat-portainer
+    command: tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
+    environment:
+      - PGID=1000
+      - PUID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "2376:2375" 
+  Portainer:
+    container_name: Portainer
+    image: portainer/portainer:latest
+    restart: always
+    environment:
+      AGENT_SECRET: mysecrettoken
+    network_mode: "bridge"
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /volume1/docker/portainer:/data
+      - /volume1/docker/portainer_data/portainer:/portainer_data
